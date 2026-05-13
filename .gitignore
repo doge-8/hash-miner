@@ -1,0 +1,12 @@
+/target
+config.toml
+*.log
+
+# 敏感文件
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.keystore
+secrets/

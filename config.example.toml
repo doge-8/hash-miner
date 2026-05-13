@@ -1,0 +1,49 @@
+# hash-miner 配置文件
+# 复制为 config.toml 后填入真实私钥
+# config.toml 已在 .gitignore 中, 不会被提交
+
+# 矿工私钥. 留空则 fallback 到项目根目录 .env 里的 PRIVATE_KEY
+private_key = ""
+
+# hash256 合约地址 (主网)
+contract = "0xAC7b5d06fa1e77D08aea40d46cB7C5923A87A0cc"
+
+# GPU 自动调优 (首次启动测算, 之后复用; 换 GPU 自动重测)
+# 强制重测: 把 batch_size 和 pipeline_depth 改为 0, 或加 --retune 参数
+[gpu]
+batch_size = 0
+pipeline_depth = 0
+fingerprint = ""
+# 单 batch 目标耗时 (毫秒). 80-150 都合理, 越大单次响应越慢但 GPU 利用率越高
+target_batch_ms = 100
+
+[mining]
+# tip 策略: "market" 跟随实测的别人付的 priority fee; "fixed" 用 tip_gwei
+tip_mode = "market"
+# market 模式: 取近 8 块成功 mine tx 实付 tip 的这个分位 (50/75/90)
+tip_percentile = 75.0
+# 市场极冷或 oracle 没数据时的下限
+tip_floor_gwei = 1.0
+# fixed 模式 / oracle fallback
+tip_gwei = 2.0
+# 经济护栏: gas/奖励 比例超过 profit_ratio 就不发 tx, GPU 继续挖等下次
+pause_when_unprofitable = true
+# 1.0 = gas 不能超过奖励 (打平就不发); 0.5 = gas 不能超过奖励一半
+profit_ratio = 1.0
+# 等回执超时秒数, 超时后会自动重同步 nonce 池
+submit_timeout_secs = 60
+# challenge watcher 轮询间隔 (秒)
+challenge_watch_secs = 3
+# 命中后等几个区块确认再算成功
+wait_confirmations = 1
+
+[rpc]
+# 读取链上状态用 (challenge / difficulty / 余额)
+read = "https://ethereum-rpc.publicnode.com"
+# 发送 mine() tx 用. 默认公共 RPC, hash256 场景下没有 MEV 风险
+# 想用 Flashbots 改成: "https://rpc.flashbots.net/fast"
+submit = "https://ethereum-rpc.publicnode.com"
+
+[log]
+# trace / debug / info / warn / error
+level = "info"
